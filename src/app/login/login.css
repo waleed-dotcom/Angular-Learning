@@ -1,0 +1,33 @@
+.btn{
+    margin: 20px;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    border: black;
+    color: aliceblue;
+    
+}
+.bg-red{
+    background-color: red;
+}
+.bg-green{
+    background-color: green;
+}
+.bg-black{
+    background-color: black;
+}
+
+.btn:hover{
+    border: 2px solid white;
+}
+
+.Count{
+
+    width: 100px;
+    background: gray;
+    border-radius: 10px;
+    padding: 5px;
+    font-size: 25px;
+    margin: auto;
+    margin-bottom: 16px;
+}

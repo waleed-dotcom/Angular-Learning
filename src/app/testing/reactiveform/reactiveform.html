@@ -1,0 +1,46 @@
+<!-- <h2>Reactive Forms</h2>
+<form action="" method="post">
+
+    <input type="text"  [formControl] = "name">
+    <br>
+    <br>
+    <input type="text"  [formControl] = "password">
+    <br>
+    <br>
+    
+    <button type="button" (click)="Submitbtn()">Submit</button>
+   
+</form> -->
+
+
+<h2>Reactive Forms</h2>
+<form  [formGroup]="profileGroup"  (ngSubmit)="Submitbtn()">
+
+    <input type="text"  formControlName = "name">
+   @if (name?.hasError('required')) {
+  <span class="validationText">Required</span>
+}
+    <br>
+    <br>
+    
+    <input type="text"  formControlName = "password">
+      @if (password?.hasError('required')) {
+  <span class="validationText">Required</span>
+}
+   @if (password?.invalid && (password?.dirty || password?.touched)) {
+  <span class="validationText">more then 5 characters</span>
+}
+    <br>
+    <br>
+    <input type="text"  formControlName = "age">
+          @if (age?.hasError('required')) {
+  <span class="validationText" >Required</span>
+}
+    <br>
+    <br>
+    
+    <button>Submit</button>
+
+
+</form>
+

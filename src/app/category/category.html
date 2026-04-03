@@ -1,0 +1,112 @@
+<app-add-category-component></app-add-category-component>
+
+<div class="table-container" >
+  <div class="table-top-bar" style="margin-top: 33px; ">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search category..."
+    [(ngModel)]="searchText"
+    (input)="searchCategory()"
+  />
+</div>
+  <table class="custom-table">
+    <thead>
+      <tr>
+        <th>#Sr</th>
+        <th>Code</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-container *ngFor="let category of paginatedCategories; let i = index">
+
+        <tr>
+          <td>
+            <div class="sr-cell" (click)="toggleRow(category.categoryId)">
+              <span class="arrow">
+                {{ expandedRow === category.categoryId ? '▼' : '▶' }}
+              </span>
+              <span>{{ i + 1 }}</span>
+            </div>
+          </td>
+          <td>{{ category.code }}</td>
+          <td>{{ category.name }}</td>
+          <td>{{ category.descriptions }}</td>
+          <td>
+            <button class="expand-btn" (click)="editCategory(category)"><i class="bi bi-pencil-square"></i></button>
+            <button class="expand-btnDelete " (click)="deleteCategory(category.categoryId)"><i
+                class="bi bi-trash"></i></button>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="expandedRow === category.categoryId">
+          <td colspan="5">
+            <div class="child-wrapper">
+              <table class="child-table">
+                <thead>
+                  <tr>
+                    <th>#Sr</th>
+                    <th>Code</th>
+                    <th>Sub Category</th>
+                    <th >Description</th>
+                    <th >Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let child of category.children; let j = index">
+                    <td>{{ j + 1 }}</td>
+                    <td>{{ child.code }}</td>
+                    <td>{{ child.name }}</td>
+                    <td>{{ child.descriptions }}</td>
+                    <td >
+                        <!-- <button class="expand-btn" (click)="addChildCategory(child)"><i
+                          class="bi bi-plus"></i></button> -->
+                      <button class="expand-btn" (click)="editCategory(child)"><i
+                          class="bi bi-pencil-square"></i></button>
+                      <button class="expand-btnDelete " (click)="deleteCategory(child.categoryId)"><i
+                          class="bi bi-trash"></i></button>
+                    </td>
+                  </tr>
+
+                  <tr *ngIf="category.children.length === 0">
+                    <td colspan="4" class="no-data">
+                      No Sub Categories Found
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+
+      </ng-container>
+    </tbody>
+  </table>
+<div class="pagination-wrapper" *ngIf="filteredCategories.length > 0">
+  <button
+    class="page-btn"
+    (click)="previousPage()"
+    [disabled]="currentPage === 1"
+  >
+    Previous
+  </button>
+
+  <span>
+    Page {{ currentPage }} of {{ totalPages }}
+  </span>
+
+  <button
+    class="page-btn"
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages"
+  >
+    Next
+  </button>
+</div>
+</div>

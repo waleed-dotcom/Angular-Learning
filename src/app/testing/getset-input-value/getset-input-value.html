@@ -1,0 +1,13 @@
+<p>getset-input-value works!</p>
+
+<h2>Input Value : {{SetValue}}</h2>
+
+<input type="text" (input)="ValueFromInput($event)" name="value"  style="width: 100px;">
+
+<button (click)="SetFromInput($event)">submit</button>
+<hr>
+
+<h2>Email : {{email}}</h2>
+<input type="text"  name="value"  style="width: 100px;" #emailField>
+<button (click)="getEmail(emailField.value)">getEmail</button>
+<button (click)="setEmail()">SetEmail</button>

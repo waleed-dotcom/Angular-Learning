@@ -1,0 +1,15 @@
+<p>loop-component works!</p>
+
+
+@for(item of class ; track item){
+    <h3>{{class}}</h3>
+}
+
+@for(item of user; track item ; let id = $index){
+    <span>{{id+1}}</span>
+    <span>{{item.name}}</span>
+    <span>{{item.age}}</span>
+    <span>{{item.email}}</span>
+    <button (click)="getobjectId(item.name)">Get</button>
+<br>
+}

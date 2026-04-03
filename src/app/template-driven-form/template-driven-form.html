@@ -1,0 +1,20 @@
+<form #userform="ngForm" (ngSubmit)="submit(userform.value)">
+    <input type="text" placeholder="Enter Name" name="name" ngModel >
+    <br><br>
+     <input type="text" placeholder="password" name="pass" ngModel >
+    <br><br>
+    <select name="gender" ngModel>
+        <option value="" >Gender</option>
+        <option value="Male" >Male</option>
+        <option value="Female" >Female</option>
+    </select>
+    <br><br>
+    <input type="range" name="range" min="0" max="20" ngModel>
+    <br><br>
+    <button> add User </button>
+</form>
+
+<span>{{userDetail?.name}}</span>
+<span>{{userDetail?.pass}}</span>
+<span>{{userDetail?.gender}}</span>
+<span>{{userDetail?.range}}</span>

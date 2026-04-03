@@ -1,0 +1,29 @@
+<p>events works!</p>
+
+
+<button style="margin-bottom: 10px;" class="btn" (click)="handlevent($event)">Click me</button>
+
+<div style="display: flex; gap: 10px;">
+
+<div (click)="handlevent($event)" style="background-color: green; height: 100px; width: 100px;">
+
+</div>
+
+
+
+<div (mouseenter)="handlevent($event)" style="background-color: blue; height: 100px; width: 100px;">
+
+</div>
+
+
+
+<div (mouseleave)="handlevent($event)" style="background-color: aqua; height: 100px; width: 100px;">
+
+</div>
+</div>
+<br>
+<input type="text" name="value"
+ (focus)="handlevent($event)"
+ (blur)="handlevent($event)"
+ (input)="handlevent($event)" style="width: 100px;">
+
