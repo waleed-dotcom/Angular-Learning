@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Product } from '../apiServices/product';
+import { Product } from '../../apiServices/product';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-category-component',
@@ -25,7 +26,7 @@ export class AddCategoryComponent {
   showModal = false;
   isEditMode = false;
   editCategoryId: number | null = null;
-  constructor(private productService: Product , private cd: ChangeDetectorRef) { }
+  constructor(private productService: Product , private cd: ChangeDetectorRef, private toastr: ToastrService) { }
 
   openModal(category: any = null): void {
     this.showModal = true;
@@ -99,7 +100,10 @@ export class AddCategoryComponent {
     if (
       !this.categoryForm.name ||
       !this.categoryForm.code ||
-      !this.categoryForm.description
+      !this.categoryForm.description ||
+      this.categoryForm.name.length > 20||
+      this.categoryForm.code.length > 5||
+      this.categoryForm.description.length > 250
     ) {
       return;
     }
@@ -133,6 +137,9 @@ export class AddCategoryComponent {
           this.closeModal();
         },
         error: (error) => {
+           alert(error.error);
+            this.productService.notifyCategoryAdded();
+          this.closeModal();
           console.error('Save Error', error);
         }
       });

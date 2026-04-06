@@ -6,8 +6,9 @@ import { TemplateDrivenForm } from './template-driven-form/template-driven-form'
 import { ParentComponent } from './parent-component/parent-component';
 import { Register } from './register/register';
 import { ProductComponent } from './product-component/product-component';
-import { Category } from './category/category';
-import { AddCategoryComponent } from './add-category-component/add-category-component';
+import { Category } from './parent-child-task/category/category';
+import { AddCategoryComponent } from './parent-child-task/add-category-component/add-category-component';
+import { ParentChildTaskModule } from './parent-child-task/parent-child-task-module';
 
 
 
@@ -17,8 +18,9 @@ import { AddCategoryComponent } from './add-category-component/add-category-comp
     HeaderComponent,TemplateDrivenForm,
     ParentComponent,Register,
     ProductComponent,
-    Category,
-  AddCategoryComponent],
+    ParentChildTaskModule
+  
+],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

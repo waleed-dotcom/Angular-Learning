@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { Product } from '../apiServices/product';
+import { Product } from '../../apiServices/product';
 import { AddCategoryComponent } from '../add-category-component/add-category-component';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-category',
@@ -26,6 +27,7 @@ export class Category implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.currentPage = 1;
     this.getCategories();
 
     this.productService.categoryAdded.subscribe(() => {
@@ -36,9 +38,7 @@ export class Category implements OnInit {
   @ViewChild(AddCategoryComponent)
   addCategoryComponent!: AddCategoryComponent;
 
-  // ngAfterViewInit(): void {
-  //   console.log(this.addCategoryComponent);
-  // }
+ 
 
   editCategory(category: any) {
     if (this.addCategoryComponent) {
@@ -61,8 +61,7 @@ export class Category implements OnInit {
         this.filteredCategories = [...data];
         console.log(this.filteredCategories);
         this.cd.detectChanges();
-
-        this.currentPage = 1;
+ 
       },
       error: (error) => {
         console.error('API Error:', error);
@@ -74,21 +73,59 @@ export class Category implements OnInit {
   this.expandedRows[categoryId] = !this.expandedRows[categoryId];
 }
 
-  deleteCategory(categoryId: number) {
-    console.log(categoryId);
-    this.productService.deleteCategory(categoryId).subscribe({
-      next: (response) => {
-        console.log('Deleted Successfully', response);
-        alert("Category Deleted")
-        this.productService.notifyCategoryAdded();
-            this.cd.detectChanges();
-      },
-      error: (error) => {
-        console.error('Delete Error', error);
-      }
-    });
+  // deleteCategory(categoryId: number) {
+  //   console.log(categoryId);
+  //   this.productService.deleteCategory(categoryId).subscribe({
+  //     next: (response) => {
+  //       console.log('Deleted Successfully', response);
+  //       alert("Category Deleted")
+  //       this.productService.notifyCategoryAdded();
+  //           this.cd.detectChanges();
+  //     },
+  //     error: (error) => {
+  //       console.error('Delete Error', error);
+  //     }
+  //   });
 
-  }
+  // }
+
+  deleteCategory(categoryId: number) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You want to delete this category?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.productService.deleteCategory(categoryId).subscribe({
+        next: (response) => {
+          console.log('Deleted Successfully', response);
+
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'Category deleted successfully.',
+            icon: 'success'
+          });
+
+          this.productService.notifyCategoryAdded();
+          this.cd.detectChanges();
+        },
+        error: (error) => {
+          console.error('Delete Error', error);
+
+          Swal.fire({
+            title: 'Error!',
+            text: 'Something went wrong while deleting category.',
+            icon: 'error'
+          });
+        }
+      });
+    }
+  });
+}
 
   searchCategory(): void {
     const text = this.searchText.toLowerCase().trim();
