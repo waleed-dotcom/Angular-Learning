@@ -17,7 +17,7 @@
                     <option [ngValue]="null">Select Category</option>
 
                     <option *ngFor="let category of parentCategory" [ngValue]="category.categoryId">
-                        {{ category.name }}
+                        {{ category.fullPath }}
                     </option>
                 </select>
             </div>

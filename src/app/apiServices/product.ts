@@ -18,7 +18,7 @@ export class Product {
   }
 
   getCategories(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/GetCategoriesWithSubCategories`);
+    return this.http.get<any[]>(`${this.apiUrl}/GetCategoriesWithSubCategory`);
   }
 
   addCategory(payload: any): Observable<any> {

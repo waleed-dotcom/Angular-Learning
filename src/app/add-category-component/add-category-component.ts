@@ -47,6 +47,7 @@ export class AddCategoryComponent {
       code: category.code ?? '',
       description: category.descriptions ?? ''
     };
+
   } else {
     this.isEditMode = false;
     this.editCategoryId = null;
@@ -58,10 +59,7 @@ export class AddCategoryComponent {
   
 
 
-  closeModal(): void {
-    this.showModal = false;
-    this.resetForm();
-  }
+ 
 
   getParentCategory(): void {
     this.productService.getParentCategories().subscribe({
@@ -74,6 +72,11 @@ export class AddCategoryComponent {
         console.error('API Error:', error);
       }
     });
+  }
+
+ closeModal(): void {
+    this.showModal = false;
+    this.resetForm();
   }
 
   resetForm(): void {
@@ -89,41 +92,6 @@ export class AddCategoryComponent {
     this.editCategoryId = null;
   }
 
-  // saveCategory(): void {
-  //   this.submitted = true;
-
-  //   if (
-  //     !this.categoryForm.name ||
-  //     !this.categoryForm.code ||
-  //     !this.categoryForm.description
-  //   ) {
-  //     return;
-  //   }
-
-  //   const payload = {
-  //     CategoryId: 0,
-  //     Name: this.categoryForm.name,
-  //     Code: this.categoryForm.code,
-  //     Descriptions: this.categoryForm.description,
-  //     ParentId: this.categoryForm.parentCategoryId ?? -1,
-  //   };
-
-  //   console.log(this.showModal);
-
-  //   this.productService.addCategory(payload).subscribe({
-  //     next: (response) => {
-  //       console.log('Saved Successfully', response);
-
-  //       this.productService.notifyCategoryAdded();
-
-  //       this.closeModal();
-  //       console.log(this.showModal);
-  //     },
-  //     error: (error) => {
-  //       console.error('Save Error', error);
-  //     }
-  //   });
-  // }
 
   saveCategory(): void {
     this.submitted = true;

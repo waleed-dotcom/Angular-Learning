@@ -1,15 +1,12 @@
 <app-add-category-component></app-add-category-component>
 
-<div class="table-container" >
+<div class="table-container">
   <div class="table-top-bar" style="margin-top: 33px; ">
-  <input
-    type="text"
-    class="search-input"
-    placeholder="Search category..."
-    [(ngModel)]="searchText"
-    (input)="searchCategory()"
-  />
-</div>
+    <input type="text" class="search-input" placeholder="Search category..." [(ngModel)]="searchText"
+      (input)="searchCategory()" />
+  </div>
+
+
   <table class="custom-table">
     <thead>
       <tr>
@@ -23,12 +20,12 @@
 
     <tbody>
       <ng-container *ngFor="let category of paginatedCategories; let i = index">
-
+ 
         <tr>
           <td>
             <div class="sr-cell" (click)="toggleRow(category.categoryId)">
               <span class="arrow">
-                {{ expandedRow === category.categoryId ? '▼' : '▶' }}
+                {{ expandedRows[category.categoryId] ? '▼' : '▶' }}
               </span>
               <span>{{ i + 1 }}</span>
             </div>
@@ -37,76 +34,138 @@
           <td>{{ category.name }}</td>
           <td>{{ category.descriptions }}</td>
           <td>
-            <button class="expand-btn" (click)="editCategory(category)"><i class="bi bi-pencil-square"></i></button>
-            <button class="expand-btnDelete " (click)="deleteCategory(category.categoryId)"><i
-                class="bi bi-trash"></i></button>
-          </td>
 
+            <button class="expand-btn" (click)="AddCategoryFromRows()">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+            <button class="expand-btn" (click)="editCategory(category)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+
+            <button class="expand-btnDelete" (click)="deleteCategory(category.categoryId)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
         </tr>
 
-        <tr *ngIf="expandedRow === category.categoryId">
+        <!-- Children Section -->
+        <tr *ngIf="expandedRows[category.categoryId]">
           <td colspan="5">
             <div class="child-wrapper">
-              <table class="child-table">
-                <thead>
-                  <tr>
-                    <th>#Sr</th>
-                    <th>Code</th>
-                    <th>Sub Category</th>
-                    <th >Description</th>
-                    <th >Actions</th>
-                  </tr>
-                </thead>
 
-                <tbody>
-                  <tr *ngFor="let child of category.children; let j = index">
-                    <td>{{ j + 1 }}</td>
-                    <td>{{ child.code }}</td>
-                    <td>{{ child.name }}</td>
-                    <td>{{ child.descriptions }}</td>
-                    <td >
-                        <!-- <button class="expand-btn" (click)="addChildCategory(child)"><i
-                          class="bi bi-plus"></i></button> -->
-                      <button class="expand-btn" (click)="editCategory(child)"><i
-                          class="bi bi-pencil-square"></i></button>
-                      <button class="expand-btnDelete " (click)="deleteCategory(child.categoryId)"><i
-                          class="bi bi-trash"></i></button>
-                    </td>
-                  </tr>
+              <ng-container *ngTemplateOutlet="recursiveRows; context: { children: category.children, level: 0 }">
+              </ng-container>
 
-                  <tr *ngIf="category.children.length === 0">
-                    <td colspan="4" class="no-data">
-                      No Sub Categories Found
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </td>
         </tr>
 
       </ng-container>
+
+      <tr *ngIf="paginatedCategories.length === 0">
+        <td colspan="5" class="no-data" style="text-align: center;">
+          No Record Found
+        </td>
+      </tr>
     </tbody>
   </table>
+
+  <ng-template #recursiveRows let-children="children" let-level="level">
+    <table class="child-table" *ngIf="children?.length > 0">
+      <thead>
+        <tr>
+          <th>#Sr</th>
+          <th>Code</th>
+          <th>Sub Category</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <ng-container *ngFor="let child of children; let j = index">
+
+          <tr>
+            <td>
+              <div class="sr-cell" (click)="toggleRow(child.categoryId)">
+                <span class="arrow" *ngIf="child.children?.length > 0">
+                  {{ expandedRows[child.categoryId] ? '▼' : '▶' }}
+                </span>
+
+                <span *ngIf="!child.children?.length" style="display: inline-block; width: 14px;"></span>
+
+               
+            <span>{{ j + 1 }}</span>
+
+          
+              </div>
+            </td>
+            <td>{{ child.code }}</td>
+            <td> {{ child.name }}</td>
+            <td>{{ child.descriptions }}</td>
+
+            <td>
+               <button class="expand-btn" (click)="AddCategoryFromRows()">
+               <i class="bi bi-plus-lg"></i>
+               </button>
+
+               <button class="expand-btn" (click)="editCategory(child)">
+               <i class="bi bi-pencil-square"></i>
+               </button>
+
+               <button class="expand-btnDelete" (click)="deleteCategory(child.categoryId)">
+               <i class="bi bi-trash"></i>
+               </button>
+            </td>
+          </tr>
+
+<tr *ngIf="expandedRows[child.categoryId] && child.children?.length > 0">
+  <td colspan="5" class="nested-child-row">
+    <ng-container *ngTemplateOutlet="recursiveRows; context: { children: child.children, level: level + 1 }">
+    </ng-container>
+  </td>
+</tr>
+
+</ng-container>
+
+ 
+</tbody>
+</table>
+ <div *ngIf="children?.length === 0" class="no-data">
+    No Sub Categories Found
+  </div>
+</ng-template>
+
+
 <div class="pagination-wrapper" *ngIf="filteredCategories.length > 0">
-  <button
-    class="page-btn"
-    (click)="previousPage()"
-    [disabled]="currentPage === 1"
-  >
-    Previous
-  </button>
 
-  <span>
-    Page {{ currentPage }} of {{ totalPages }}
-  </span>
+  <div class="record-size pagination-wrap">
+    <label>Show</label>
 
-  <button
-    class="page-btn"
-    (click)="nextPage()"
-    [disabled]="currentPage === totalPages"
-  >
-    Next
-  </button>
+    <select [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="15">15</option>
+      <option [value]="20">20</option>
+    </select>
+
+    <span>records</span>
+  </div>
+
+  <div class="pagination-numbers">
+    <button class="page-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+      Prev
+    </button>
+
+    <button class="page-number" *ngFor="let page of [].constructor(totalPages); let i = index"
+      [class.active]="currentPage === i + 1" (click)="currentPage = i + 1">
+      {{ i + 1 }}
+    </button>
+
+    <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+
 </div>
 </div>
