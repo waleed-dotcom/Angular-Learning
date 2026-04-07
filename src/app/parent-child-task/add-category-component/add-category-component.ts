@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Product } from '../../apiServices/product';
 import { ToastrService } from 'ngx-toastr';
 
@@ -12,70 +12,88 @@ import { ToastrService } from 'ngx-toastr';
   styleUrl: './add-category-component.css',
 })
 export class AddCategoryComponent {
-
   parentCategory: any[] = [];
 
   categoryForm = {
     parentCategoryId: null,
     name: '',
     code: '',
-    description: ''
+    description: '',
   };
 
   submitted = false;
   showModal = false;
   isEditMode = false;
   editCategoryId: number | null = null;
-  constructor(private productService: Product , private cd: ChangeDetectorRef, private toastr: ToastrService) { }
+  showParentCategory = false;
+  validationNameMessage: string = '';
+  validationCodeMessage: string = '';
+  validationDescMessage: string = '';
 
-  openModal(category: any = null): void {
+  constructor(
+    private productService: Product,
+    private cd: ChangeDetectorRef,
+    private toastr: ToastrService,
+  ) {}
+@ViewChild('categoryFormRef') categoryFormRef!: NgForm;
+  openModal(category: any = null, isAddChild: boolean = false): void {
     this.showModal = true;
-    this.getParentCategory();
+    this.showParentCategory = true;
 
- if (category) {
-    console.log(category);
+    this.getParentCategory(category, isAddChild);
 
-    this.isEditMode = true;
-    this.editCategoryId = category.categoryId;
+    if (category && !isAddChild) {
+      this.isEditMode = true;
+      this.editCategoryId = category.categoryId;
+      if (category.parentId === -1) {
+        this.showParentCategory = false;
+      }
+      this.categoryForm = {
+        parentCategoryId: category ? (category.parentId === -1 ? -1 : category.parentId) : null,
+        name: category.name ?? '',
+        code: category.code ?? '',
+        description: category.descriptions ?? '',
+      };
+    } else {
+      this.isEditMode = false;
+      this.editCategoryId = null;
 
-    const selectedParent = this.parentCategory.find(
-      x => x.categoryId === category.parentId
-    );
+      this.categoryForm = {
+        parentCategoryId: category
+          ? category.parentId === -1
+            ? category.categoryId
+            : category.parentId
+          : null,
+        name: '',
+        code: '',
+        description: '',
+      };
+    }
+  }
 
-    this.categoryForm = {
-      parentCategoryId: selectedParent?.categoryId ?? null,
-      name: category.name ?? '',
-      code: category.code ?? '',
-      description: category.descriptions ?? ''
-    };
-
-  } else {
+  openRootModal(): void {
+       this.resetForm();
+    this.showModal = true;
     this.isEditMode = false;
     this.editCategoryId = null;
-    this.resetForm();
-  }
-     
-  }
-
-  
-
-
  
+    this.showParentCategory = false;
+  }
 
-  getParentCategory(): void {
-    this.productService.getParentCategories().subscribe({
+  getParentCategory(category: any = null, isAddChild: boolean = false): void {
+    this.productService.getParentCategories(category?.categoryId ?? 0).subscribe({
       next: (data) => {
-        console.log(data);
+        this.parentCategory = [];
         this.parentCategory = data;
         this.cd.detectChanges();
       },
       error: (error) => {
         console.error('API Error:', error);
-      }
+      },
     });
   }
 
- closeModal(): void {
+  closeModal(): void {
     this.showModal = false;
     this.resetForm();
   }
@@ -85,26 +103,34 @@ export class AddCategoryComponent {
       parentCategoryId: null,
       name: '',
       code: '',
-      description: ''
+      description: '',
     };
 
     this.submitted = false;
     this.isEditMode = false;
     this.editCategoryId = null;
+    this.validationCodeMessage = '';
+    this.validationNameMessage = '';
+    this.validationDescMessage = '';
+
+    if (this.categoryFormRef) {
+    this.categoryFormRef.resetForm({
+      parentCategoryId: null,
+      name: '',
+      code: '',
+      description: '',
+    });
+  }
   }
 
-
-  saveCategory(): void {
+  saveCategory(form: NgForm) {
+ 
     this.submitted = true;
 
-    if (
-      !this.categoryForm.name ||
-      !this.categoryForm.code ||
-      !this.categoryForm.description ||
-      this.categoryForm.name.length > 20||
-      this.categoryForm.code.length > 5||
-      this.categoryForm.description.length > 250
-    ) {
+    if (form.invalid) {
+      Object.keys(form.controls).forEach((field) => {
+        form.controls[field].markAsTouched();
+      });
       return;
     }
 
@@ -116,32 +142,44 @@ export class AddCategoryComponent {
       ParentId: this.categoryForm.parentCategoryId ?? -1,
     };
 
+    console.log(payload);
+
     if (this.isEditMode) {
       this.productService.updateCategory(payload).subscribe({
         next: (response) => {
-          console.log('Updated Successfully', response);
 
+           if (response.success) {
+            console.log(response.message);
+            
           this.productService.notifyCategoryAdded();
           this.closeModal();
+          }else{
+            this.validationCodeMessage = response.message;
+                this.cd.detectChanges();
+          }
+         
         },
         error: (error) => {
+          
           console.error('Update Error', error);
-        }
+        },
       });
     } else {
       this.productService.addCategory(payload).subscribe({
         next: (response) => {
-          console.log('Saved Successfully', response);
-
-          this.productService.notifyCategoryAdded();
-          this.closeModal();
+           console.log(response);
+          if (response.success) {
+            console.log(response.message);
+            this.productService.notifyCategoryAdded();
+            this.closeModal();
+          }else{
+              this.validationCodeMessage = response.message;
+                  this.cd.detectChanges();
+          }
         },
         error: (error) => {
-           alert(error.error);
-            this.productService.notifyCategoryAdded();
-          this.closeModal();
           console.error('Save Error', error);
-        }
+        },
       });
     }
   }

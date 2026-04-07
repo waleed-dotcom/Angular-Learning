@@ -1,6 +1,7 @@
-<button class="expand-btn" type="button" (click)="openModal()">Add Category</button>
+<button class="expand-btn" type="button" (click)="openRootModal()">Add Category</button>
 
 <div class="modal-backdrop" *ngIf="showModal">
+<form #categoryFormRef="ngForm" (ngSubmit)="saveCategory(categoryFormRef)">
   <div class="custom-modal">
     <div class="modal-header">
       <h3>{{ isEditMode ? 'Update Category' : 'Create Category' }}</h3>
@@ -8,83 +9,112 @@
     </div>
 
     <div class="modal-body">
-      <div class="form-group">
+      <div class="form-group" *ngIf="showParentCategory">
         <label>Parent Category</label>
 
         <select
           class="form-control"
+          name="parentCategoryId"
           [(ngModel)]="categoryForm.parentCategoryId"
           [disabled]="isEditMode"
         >
-          <option [ngValue]="null">Select Category</option>
-
           <option *ngFor="let category of parentCategory" [ngValue]="category.categoryId">
-            {{ category.fullPath }}
+            {{ category.name }}
           </option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Category Name</label>
+        <label>Category Name <span style="color: red">*</span></label>
 
         <input
           type="text"
           class="form-control"
+          name="name"
+          required
+          maxlength="20"
+          #name="ngModel"
           [(ngModel)]="categoryForm.name"
           placeholder="Enter Category Name"
+          (blur)="categoryForm.name = categoryForm.name.trim()"
         />
 
-        <small class="text-danger" *ngIf="submitted && !categoryForm.name">
-          Category Name is required
-        </small>
-        <small class="text-danger" *ngIf="submitted && categoryForm.name.length > 20">
-          Category Name cannot be more than 20 characters
-        </small>
+        <div *ngIf="name.invalid && name.touched" class="text-danger mt-2">
+          <div *ngIf="name.errors?.['required']">
+            Category Name is required
+          </div>
+
+         
+        </div>
       </div>
 
       <div class="form-group">
-        <label>Code</label>
+        <label>Code <span style="color: red">*</span></label>
 
         <input
           type="text"
           class="form-control"
+          name="code"
+          required
+          maxlength="5"
+          #code="ngModel"
           [(ngModel)]="categoryForm.code"
           placeholder="Enter Code"
+            (input)="validationCodeMessage = ''"
+          (blur)="categoryForm.code = categoryForm.code.trim()"
         />
 
-        <small class="text-danger" *ngIf="submitted && !categoryForm.code">
-          Code is required
-        </small>
-          <small class="text-danger" *ngIf="submitted && categoryForm.code.length > 5">
-          Code cannot be more than 5 characters
-        </small>
+        <div *ngIf="code.invalid && code.touched" class="text-danger mt-2">
+          <div *ngIf="code.errors?.['required']">
+            Code is required
+          </div>
+
+       
+        </div>
+          <div *ngIf="validationCodeMessage" class="text-danger mt-2">
+    {{ validationCodeMessage }}
+  </div>
       </div>
 
       <div class="form-group">
-        <label>Description</label>
+        <label>Description <span style="color: red">*</span></label>
 
         <textarea
           class="form-control"
           rows="3"
+          name="description"
+          required
+          maxlength="250"
+          #description="ngModel"
           [(ngModel)]="categoryForm.description"
           placeholder="Enter Description"
+          (blur)="categoryForm.description = categoryForm.description.trim()"
         ></textarea>
 
-        <small class="text-danger" *ngIf="submitted && !categoryForm.description">
-          Description is required
-        </small>
+        <div *ngIf="description.invalid && description.touched" class="text-danger mt-2">
+          <div *ngIf="description.errors?.['required']">
+            Description is required
+          </div>
 
-          <small class="text-danger" *ngIf="submitted && categoryForm.description.length > 250">
-          Description cannot be more than 250 characters
-        </small>
+         
+        </div>
+       
       </div>
     </div>
 
     <div class="modal-footer">
-      <button class="cancel-btn" type="button" (click)="closeModal()">Cancel</button>
-      <button class="save-btn" type="button" (click)="saveCategory()">
+      <button class="cancel-btn" type="button" (click)="closeModal()">
+        Cancel
+      </button>
+
+      <button
+        class="save-btn"
+        type="submit"
+        [disabled]="categoryFormRef.invalid"
+      >
         {{ isEditMode ? 'Update' : 'Save' }}
       </button>
     </div>
   </div>
+</form>
 </div>

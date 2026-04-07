@@ -35,7 +35,7 @@
           <td>{{ category.descriptions }}</td>
           <td>
 
-            <button class="expand-btn" (click)="AddCategoryFromRows()">
+            <button class="expand-btn" (click)="AddCategoryFromRows(category)">
               <i class="bi bi-plus-lg"></i>
             </button>
             <button class="expand-btn" (click)="editCategory(category)">
@@ -105,7 +105,7 @@
             <td>{{ child.descriptions }}</td>
 
             <td>
-               <button class="expand-btn" (click)="AddCategoryFromRows()">
+               <button class="expand-btn" (click)="AddCategoryFromRows(child)">
                <i class="bi bi-plus-lg"></i>
                </button>
 

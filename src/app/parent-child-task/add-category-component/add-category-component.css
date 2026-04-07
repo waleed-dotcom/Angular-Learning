@@ -122,7 +122,14 @@
 .save-btn:hover {
   background: #0b5ed7;
 }
+.save-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
+.save-btn:disabled:hover {
+  cursor: not-allowed;
+}
 @keyframes modalOpen {
   from {
     opacity: 0;

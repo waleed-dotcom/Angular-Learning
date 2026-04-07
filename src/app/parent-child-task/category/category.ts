@@ -46,11 +46,11 @@ export class Category implements OnInit {
     }
   }
 
-  AddCategoryFromRows() {
-    if (this.addCategoryComponent) {
-      this.addCategoryComponent.openModal();
-    }
+ AddCategoryFromRows(category: any = null) {
+  if (this.addCategoryComponent) {
+    this.addCategoryComponent.openModal(category, true);
   }
+}
 
   
 
@@ -59,7 +59,6 @@ export class Category implements OnInit {
       next: (data) => {
         this.categories = [...data];
         this.filteredCategories = [...data];
-        console.log(this.filteredCategories);
         this.cd.detectChanges();
  
       },
@@ -72,23 +71,7 @@ export class Category implements OnInit {
   toggleRow(categoryId: number): void {
   this.expandedRows[categoryId] = !this.expandedRows[categoryId];
 }
-
-  // deleteCategory(categoryId: number) {
-  //   console.log(categoryId);
-  //   this.productService.deleteCategory(categoryId).subscribe({
-  //     next: (response) => {
-  //       console.log('Deleted Successfully', response);
-  //       alert("Category Deleted")
-  //       this.productService.notifyCategoryAdded();
-  //           this.cd.detectChanges();
-  //     },
-  //     error: (error) => {
-  //       console.error('Delete Error', error);
-  //     }
-  //   });
-
-  // }
-
+ 
   deleteCategory(categoryId: number) {
   Swal.fire({
     title: 'Are you sure?',
