@@ -266,3 +266,51 @@
   border-left: 3px solid #dee2e6;
   padding-left: 10px;
 }
+
+  /*         Drag And Drop           */
+  
+.cdk-drag-preview {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  border-collapse: collapse;
+}
+
+.cdk-drag-preview td {
+  padding: 14px;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+/* same column width as table */
+.cdk-drag-preview td:nth-child(1) { width: 10%; }
+.cdk-drag-preview td:nth-child(2) { width: 15%; }
+.cdk-drag-preview td:nth-child(3) { width: 25%; }
+.cdk-drag-preview td:nth-child(4) { width: 30%; }
+.cdk-drag-preview td:nth-child(5) { width: 20%; }
+
+.cdk-drag-preview .sr-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms ease;
+}
+
+.custom-table tbody.cdk-drop-list-dragging tr:not(.cdk-drag-placeholder) {
+  transition: transform 250ms ease;
+}
+
+ 
+  /*         Drag And Drop           */

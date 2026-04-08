@@ -4,11 +4,12 @@ import { Product } from '../../apiServices/product';
 import { AddCategoryComponent } from '../add-category-component/add-category-component';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-category',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddCategoryComponent],
+  imports: [CommonModule, FormsModule, AddCategoryComponent,DragDropModule],
   templateUrl: './category.html',
   styleUrl: './category.css',
 })
@@ -162,4 +163,81 @@ export class Category implements OnInit {
   this.pageSize = Number(value);
   this.currentPage = 1;
 }
+
+dropParent(event: CdkDragDrop<any[]>) {
+  const oldIndex = event.previousIndex;
+  const newIndex = event.currentIndex;
+
+  if (oldIndex === newIndex) return;
+
+  moveItemInArray(this.filteredCategories, oldIndex, newIndex);
+
+  const start = Math.min(oldIndex, newIndex);
+  const end = Math.max(oldIndex, newIndex);
+
+  const affectedItems: any[] = [];
+
+  for (let i = start; i <= end; i++) {
+    const item = this.filteredCategories[i];
+    const newDisplayOrder = i + 1; // global index
+
+    if (item.displayOrder !== newDisplayOrder) {
+      item.displayOrder = newDisplayOrder;
+
+      affectedItems.push({
+        categoryId: item.categoryId,
+        displayOrder: item.displayOrder
+      });
+    }
+  }
+
+  this.saveOrder(affectedItems);
+}
+
+dropChild(event: CdkDragDrop<any[]>, children: any[]) {
+  const oldIndex = event.previousIndex;
+  const newIndex = event.currentIndex;
+
+  if (oldIndex === newIndex) return;
+
+  moveItemInArray(children, oldIndex, newIndex);
+
+  const start = Math.min(oldIndex, newIndex);
+  const end = Math.max(oldIndex, newIndex);
+
+  const affectedItems: any[] = [];
+
+  for (let i = start; i <= end; i++) {
+    const item = children[i];
+    const newDisplayOrder = i + 1;
+
+    if (item.displayOrder !== newDisplayOrder) {
+      item.displayOrder = newDisplayOrder;
+
+      affectedItems.push({
+        categoryId: item.categoryId,
+        displayOrder: item.displayOrder
+      });
+    }
+  }
+
+  this.saveOrder(affectedItems);
+}
+
+saveOrder(categories: any[]) {
+  const payload = categories.map(item => ({
+    categoryId: item.categoryId,
+    displayOrder: item.displayOrder
+  }));
+
+  this.productService.updateCategoryOrder(payload).subscribe({
+    next: () => {
+      console.log('Order Updated Successfully');
+    },
+    error: (error) => {
+      console.error('Order Update Error', error);
+    }
+  });
+}
+
 }

@@ -36,4 +36,8 @@ export class Product {
   notifyCategoryAdded(): void {
     this.categoryAddedSource.next();
   }
+
+  updateCategoryOrder(payload: any) {
+    return this.http.post(`${this.apiUrl}/UpdateCategoryOrder`, payload);
+  }
 }
